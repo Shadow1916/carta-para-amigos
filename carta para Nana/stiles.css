@@ -1,0 +1,132 @@
+styles.css
+/* styles.css
+   Estilos complementarios para index.html (tarjeta, controles, corazones, animaciones)
+   Guarda este contenido en styles.css y enlázalo desde tu index.html:
+   <link rel="stylesheet" href="styles.css">
+*/
+
+/* Variables por defecto (puedes sobrescribir desde JS) */
+:root{
+  --bg: #000000;
+  --card: #ffeef6;
+  --accent: #8B0000;
+  --muted: #b08aa0;
+  --text: #111;
+  --glass: rgba(255,255,255,0.04);
+  --glass-strong: rgba(255,255,255,0.08);
+}
+
+/* Reset ligero */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;padding:0;font-family:"Segoe UI", Roboto, Arial, sans-serif;background:
+  radial-gradient(ellipse at 10% 10%, #0b0b0b 0%, var(--bg) 40%);color:var(--text);-webkit-font-smoothing:antialiased}
+
+/* Contenedor principal */
+.container{
+  min-height:100vh;
+  display:flex;
+  gap:28px;
+  align-items:center;
+  justify-content:center;
+  padding:36px;
+}
+
+/* Panel de controles */
+.controls{
+  width:320px;
+  max-width:40%;
+  background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  border-radius:12px;
+  padding:18px;
+  color:#fff;
+  box-shadow:0 10px 30px rgba(5,6,20,0.5);
+  backdrop-filter: blur(6px);
+}
+.controls h3{margin:0 0 12px 0;font-size:1.05rem;color:#fff}
+.field{margin-bottom:12px;display:flex;flex-direction:column;gap:6px}
+label{font-size:0.9rem;color:#e9e9f1}
+input[type="text"], textarea, select{
+  padding:8px 10px;border-radius:8px;border:1px solid var(--glass-strong);
+  background:rgba(255,255,255,0.03);color:#fff;outline:none;font-size:0.95rem;
+}
+textarea{min-height:120px;resize:vertical}
+.row{display:flex;gap:8px;align-items:center}
+.color-swatch{width:36px;height:36px;border-radius:8px;border:1px solid var(--glass-strong);cursor:pointer}
+
+/* Botones */
+button{
+  padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:700;color:#fff;
+  background:linear-gradient(90deg,var(--accent), #ff4b6e);box-shadow:0 8px 20px rgba(139,0,0,0.12);
+}
+button.secondary{background:transparent;border:1px solid rgba(255,255,255,0.08);color:#fff;font-weight:600}
+button:disabled{opacity:0.6;cursor:not-allowed}
+
+/* Vista previa */
+.preview-wrap{width:640px;max-width:60%;min-width:280px;position:relative;display:flex;align-items:center;justify-content:center}
+.card{
+  position:relative;width:100%;background:linear-gradient(180deg,var(--card),var(--card));
+  border-radius:18px;box-shadow:0 20px 50px rgba(5,6,20,0.45);padding:36px;z-index:10;overflow:hidden;
+}
+.header{display:flex;align-items:center;gap:16px;margin-bottom:8px}
+.friend-name{
+  font-size:2.2rem;font-weight:800;color:var(--accent);letter-spacing:0.6px;line-height:1;transform:rotate(-2deg);
+  text-shadow:0 6px 18px rgba(139,0,0,0.12);
+}
+.subtitle{color:var(--muted);font-size:0.95rem}
+
+/* Carta interna */
+.letter{
+  background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.9));
+  border-radius:12px;padding:22px;line-height:1.6;color:#222;box-shadow:inset 0 1px 0 rgba(255,255,255,0.6);
+  font-size:1rem;margin-top:12px;
+}
+.letter p{margin:0 0 12px 0}
+.signature{margin-top:18px;font-weight:700;color:var(--accent)}
+
+/* Corazón grande */
+.big-heart{position:absolute;right:28px;top:28px;width:96px;height:96px;z-index:9;animation:beat 1s infinite;filter:drop-shadow(0 6px 18px rgba(139,0,0,0.25));transform:rotate(45deg)}
+@keyframes beat{0%{transform:scale(1) rotate(45deg)}25%{transform:scale(1.12) rotate(45deg)}40%{transform:scale(0.98) rotate(45deg)}60%{transform:scale(1.06) rotate(45deg)}100%{transform:scale(1) rotate(45deg)}}
+
+/* Corazones flotantes (generados dinámicamente) */
+.hearts-layer{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+.heart{
+  position:absolute;width:22px;height:22px;transform:rotate(45deg);
+  background:linear-gradient(135deg,#ff9bbd,var(--accent));left:0;top:0;opacity:0.95;
+  animation:floatUp linear forwards;will-change:transform,opacity;border-radius:4px;
+}
+.heart::before,.heart::after{content:"";position:absolute;width:22px;height:22px;background:inherit;border-radius:50%;top:-11px;left:0}
+.heart::after{left:11px;top:0}
+@keyframes floatUp{
+  0%{transform:translateY(0) rotate(45deg) scale(0.9);opacity:0}
+  10%{opacity:1}
+  100%{transform:translateY(-120vh) translateX(var(--drift)) rotate(45deg) scale(1.1);opacity:0}
+}
+
+/* Corazones de estallido (series-heart) */
+.series-heart{
+  width:18px;height:18px;border-radius:4px;transform:rotate(45deg);position:fixed;pointer-events:none;
+  box-shadow:0 6px 18px rgba(0,0,0,0.12);z-index:9999;
+}
+
+/* Elementos revelables */
+.reveal-item{opacity:0;transform:translateY(10px) scale(0.98);transition:opacity 480ms cubic-bezier(.2,.8,.2,1), transform 480ms cubic-bezier(.2,.8,.2,1)}
+
+/* Pequeños adornos y utilidades */
+.kicker{font-size:0.85rem;color:var(--muted);margin-bottom:8px}
+.center{display:flex;align-items:center;justify-content:center}
+.hidden{display:none}
+
+/* Responsive */
+@media (max-width:980px){
+  .container{flex-direction:column;gap:18px;padding:18px}
+  .controls{width:100%;max-width:720px}
+  .preview-wrap{width:100%;max-width:720px}
+  .friend-name{font-size:1.8rem}
+}
+
+/* Impresión ligera (opcional) */
+@media print{
+  body{background:#fff;color:#000}
+  .controls, .hearts-layer, button{display:none}
+  .card{box-shadow:none;border-radius:0;padding:18mm}
+}

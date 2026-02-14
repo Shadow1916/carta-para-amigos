@@ -1,0 +1,490 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Carta para Nana - Espero que te gustes</title>
+  <style>
+    :root{
+      --bg:#000000;            /* negro */
+      --card:#ffeef6;          /* rosa claro para la tarjeta */
+      --accent:#8B0000;        /* rojo sangre */
+      --muted:#b08aa0;
+      --text:#111;
+    }
+
+    html,body{
+      height:100%;
+      margin:0;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      background: radial-gradient(ellipse at 10% 10%, #0b0b0b 0%, var(--bg) 40%), linear-gradient(180deg, rgba(139,0,0,0.03), transparent 40%);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    .container{
+      min-height:100vh;
+      display:flex;
+      gap:28px;
+      align-items:center;
+      justify-content:center;
+      padding:36px;
+      box-sizing:border-box;
+    }
+
+    /* Panel de controles */
+    .controls{
+      width:320px;
+      max-width:40%;
+      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border-radius:12px;
+      padding:18px;
+      color:#fff;
+      box-shadow:0 10px 30px rgba(5,6,20,0.5);
+      backdrop-filter: blur(6px);
+    }
+
+    .controls h3{
+      margin:0 0 12px 0;
+      font-size:1.05rem;
+      color:#fff;
+    }
+
+    .field{
+      margin-bottom:12px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    label{ font-size:0.9rem; color:#e9e9f1; }
+
+    input[type="text"], textarea, select{
+      padding:8px 10px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,0.08);
+      background:rgba(255,255,255,0.03);
+      color:#fff;
+      outline:none;
+      font-size:0.95rem;
+    }
+
+    textarea{ min-height:120px; resize:vertical; }
+
+    .row{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+
+    .color-swatch{
+      width:36px;
+      height:36px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,0.08);
+      cursor:pointer;
+    }
+
+    button{
+      padding:10px 14px;
+      border-radius:10px;
+      border:0;
+      cursor:pointer;
+      font-weight:700;
+      color:#fff;
+      background:linear-gradient(90deg,var(--accent), #ff4b6e);
+      box-shadow:0 8px 20px rgba(139,0,0,0.12);
+    }
+
+    button.secondary{
+      background:transparent;
+      border:1px solid rgba(255,255,255,0.08);
+      color:#fff;
+      font-weight:600;
+    }
+
+    /* Vista previa tarjeta */
+    .preview-wrap{
+      width:640px;
+      max-width:60%;
+      min-width:280px;
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .card{
+      position:relative;
+      width:100%;
+      background:linear-gradient(180deg, var(--card), var(--card));
+      border-radius:18px;
+      box-shadow:0 20px 50px rgba(5,6,20,0.45);
+      padding:36px;
+      z-index:10;
+      overflow:hidden;
+      box-sizing:border-box;
+    }
+
+    .card .header{
+      display:flex;
+      align-items:center;
+      gap:16px;
+      margin-bottom:8px;
+    }
+
+    .friend-name{
+      font-size:2.2rem;
+      font-weight:800;
+      color:var(--accent);
+      letter-spacing:0.6px;
+      line-height:1;
+      transform:rotate(-2deg);
+      text-shadow:0 6px 18px rgba(139,0,0,0.12);
+    }
+
+    .subtitle{
+      color:var(--muted);
+      font-size:0.95rem;
+    }
+
+    .letter{
+      background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.9));
+      border-radius:12px;
+      padding:22px;
+      line-height:1.6;
+      color:#222;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,0.6);
+      font-size:1rem;
+      margin-top:12px;
+    }
+
+    .signature{
+      margin-top:18px;
+      font-weight:700;
+      color:var(--accent);
+    }
+
+    /* Corazón grande que late */
+    .big-heart{
+      position:absolute;
+      right:28px;
+      top:28px;
+      width:96px;
+      height:96px;
+      z-index:9;
+      animation:beat 1s infinite;
+      filter:drop-shadow(0 6px 18px rgba(139,0,0,0.25));
+      transform:rotate(45deg);
+    }
+
+    @keyframes beat{
+      0%{ transform:scale(1) rotate(45deg); }
+      25%{ transform:scale(1.12) rotate(45deg); }
+      40%{ transform:scale(0.98) rotate(45deg); }
+      60%{ transform:scale(1.06) rotate(45deg); }
+      100%{ transform:scale(1) rotate(45deg); }
+    }
+
+    /* Capa de corazones flotantes */
+    .hearts-layer{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:1;
+      overflow:hidden;
+    }
+
+    .heart{
+      position:absolute;
+      width:22px;
+      height:22px;
+      transform:rotate(45deg);
+      background:linear-gradient(135deg, #ff9bbd, var(--accent));
+      left:0;
+      top:0;
+      opacity:0.95;
+      animation:floatUp linear forwards;
+      will-change:transform, opacity;
+      border-radius:4px;
+    }
+
+    .heart::before,
+    .heart::after{
+      content:"";
+      position:absolute;
+      width:22px;
+      height:22px;
+      background:inherit;
+      border-radius:50%;
+      top:-11px;
+      left:0;
+    }
+
+    .heart::after{
+      left:11px;
+      top:0;
+    }
+
+    @keyframes floatUp{
+      0%{
+        transform:translateY(0) rotate(45deg) scale(0.9);
+        opacity:0;
+      }
+      10%{ opacity:1; }
+      100%{
+        transform:translateY(-120vh) translateX(var(--drift)) rotate(45deg) scale(1.1);
+        opacity:0;
+      }
+    }
+
+    /* Responsive */
+    @media (max-width:980px){
+      .container{ flex-direction:column; gap:18px; padding:18px; }
+      .controls{ width:100%; max-width:720px; }
+      .preview-wrap{ width:100%; max-width:720px; }
+      .friend-name{ font-size:1.8rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Panel de controles -->
+    <aside class="controls" aria-label="Controles de personalización">
+      <h3>Personaliza la carta</h3>
+
+      <div class="field">
+        <label for="friendName">Nombre de tu amiga</label>
+        <input id="friendName" type="text" value="Nana" />
+      </div>
+
+      <div class="field">
+        <label for="messageText">Mensaje</label>
+        <textarea id="messageText">Querida Nana,
+
+Hoy quiero recordarte lo especial que eres. Gracias por cada risa compartida, por escuchar sin juzgar y por estar presente en los momentos importantes y en los pequeños. Tu amistad ilumina mis días y me inspira a ser mejor.
+
+Deseo que cada paso que des esté lleno de fuerza, alegría y ternura. Que nunca te falte amor ni motivos para sonreír. Estoy aquí para ti, siempre.
+
+Con todo mi cariño,
+Tu amiga</textarea>
+      </div>
+
+      <div class="field">
+        <label>Color principal</label>
+        <div class="row">
+          <input id="accentColor" type="color" value="#8B0000" aria-label="Color principal" />
+          <input id="cardBgColor" type="color" value="#ffeef6" aria-label="Color fondo tarjeta" />
+          <input id="bgColor" type="color" value="#000000" aria-label="Color fondo página" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Tamaño de letra del nombre</label>
+        <select id="nameSize">
+          <option value="2.2rem">Grande</option>
+          <option value="1.8rem">Mediano</option>
+          <option value="1.4rem">Pequeño</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Tipografía</label>
+        <select id="fontSelect">
+          <option value='"Segoe UI", Roboto, Arial, sans-serif'>Sistema</option>
+          <option value='"Georgia", serif'>Georgia</option>
+          <option value='"Poppins", sans-serif'>Poppins</option>
+          <option value='"Courier New", monospace'>Monospace</option>
+        </select>
+      </div>
+
+      <div class="field row" style="margin-top:8px;">
+        <button id="applyBtn">Aplicar cambios</button>
+        <button id="downloadBtn" class="secondary">Descargar como imagen</button>
+      </div>
+
+      <div style="margin-top:12px; font-size:0.85rem; color:rgba(255,255,255,0.8);">
+        Usa el botón Descargar para guardar la carta como PNG. Ajusta colores y texto antes de descargar.
+      </div>
+    </aside>
+
+    <!-- Vista previa -->
+    <main class="preview-wrap" aria-label="Vista previa de la carta">
+      <article class="card" id="cardToExport" role="article" aria-label="Carta para Nana">
+        <div class="header">
+          <div>
+            <div class="friend-name" id="friendNamePreview">Nana</div>
+            <div class="subtitle">Un pequeño detalle con mucho cariño</div>
+          </div>
+        </div>
+
+        <div class="letter" id="letterPreview" aria-live="polite">
+          <p>Querida Nana,</p>
+          <p>Hoy quiero recordarte lo especial que eres. Gracias por cada risa compartida, por escuchar sin juzgar y por estar presente en los momentos importantes y en los pequeños. Tu amistad ilumina mis días y me inspira a ser mejor.</p>
+          <p>Deseo que cada paso que des esté lleno de fuerza, alegría y ternura. Que nunca te falte amor ni motivos para sonreír. Estoy aquí para ti, siempre.</p>
+          <p class="signature">Con todo mi cariño,</p>
+          <p class="signature">Tu amiga</p>
+        </div>
+
+        <!-- Corazón grande decorativo -->
+        <svg class="big-heart" viewBox="0 0 32 32" aria-hidden="true">
+          <path fill="var(--accent)" d="M23.6 4.6c-2.3 0-4.3 1.3-5.6 3.2-1.3-1.9-3.3-3.2-5.6-3.2-3.6 0-6.4 3.1-6.4 6.8 0 7.6 12 12.8 12 12.8s12-5.2 12-12.8c0-3.7-2.8-6.8-6.4-6.8z"/>
+        </svg>
+      </article>
+    </main>
+  </div>
+
+  <!-- Capa para corazones flotantes -->
+  <div class="hearts-layer" id="heartsLayer" aria-hidden="true"></div>
+
+  <!-- html2canvas CDN para exportar la tarjeta como imagen -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <script>
+    // Elementos
+    const friendNameInput = document.getElementById('friendName');
+    const messageText = document.getElementById('messageText');
+    const accentColor = document.getElementById('accentColor');
+    const cardBgColor = document.getElementById('cardBgColor');
+    const bgColor = document.getElementById('bgColor');
+    const nameSize = document.getElementById('nameSize');
+    const fontSelect = document.getElementById('fontSelect');
+    const applyBtn = document.getElementById('applyBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    const friendNamePreview = document.getElementById('friendNamePreview');
+    const letterPreview = document.getElementById('letterPreview');
+    const cardToExport = document.getElementById('cardToExport');
+
+    // Inicializar vista previa
+    function updatePreview(){
+      friendNamePreview.textContent = friendNameInput.value || 'Nana';
+      letterPreview.innerHTML = messageText.value
+        .split('\\n\\n')
+        .map(p => `<p>${escapeHtml(p).replace(/\\n/g,'<br>')}</p>`)
+        .join('');
+      // aplicar colores y tipografía
+      document.documentElement.style.setProperty('--accent', accentColor.value);
+      document.documentElement.style.setProperty('--card', cardBgColor.value);
+      document.documentElement.style.setProperty('--bg', bgColor.value);
+      cardToExport.style.background = `linear-gradient(180deg, ${cardBgColor.value}, ${cardBgColor.value})`;
+      friendNamePreview.style.fontSize = nameSize.value;
+      cardToExport.style.fontFamily = fontSelect.value;
+    }
+
+    // Escape básico para evitar inyección HTML
+    function escapeHtml(str){
+      return str.replace(/[&<>"']/g, function(m){
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
+      });
+    }
+
+    applyBtn.addEventListener('click', () => {
+      updatePreview();
+      applyBtn.textContent = 'Aplicado';
+      setTimeout(()=> applyBtn.textContent = 'Aplicar cambios', 900);
+    });
+
+    // Descargar como imagen usando html2canvas
+    downloadBtn.addEventListener('click', async () => {
+      downloadBtn.disabled = true;
+      downloadBtn.textContent = 'Preparando...';
+      const scale = 2;
+      const originalTransform = cardToExport.style.transform;
+      cardToExport.style.transformOrigin = 'top left';
+
+      try {
+        const canvas = await html2canvas(cardToExport, {
+          scale: scale,
+          backgroundColor: null,
+          useCORS: true,
+          logging: false
+        });
+        const dataUrl = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        const safeName = (friendNameInput.value || 'carta').replace(/[^a-z0-9-_]/gi,'_').toLowerCase();
+        link.download = `${safeName}_carta.png`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      } catch (err) {
+        console.error('Error al generar la imagen', err);
+        alert('Ocurrió un error al generar la imagen. Intenta nuevamente.');
+      } finally {
+        downloadBtn.disabled = false;
+        downloadBtn.textContent = 'Descargar como imagen';
+        cardToExport.style.transform = originalTransform;
+      }
+    });
+
+    // Generador de corazones flotantes (ajustado a la paleta)
+    (function(){
+      const layer = document.getElementById('heartsLayer');
+      const colors = [
+        ['#8B0000','#4b0000'],   // rojo sangre oscuro
+        ['#ff6b9a','#ff9bbd'],   // rosa
+        ['#8B0000','#ff9bbd'],   // mezcla rojo-rosa
+        ['#ff9bbd','#4b0000']    // rosa a oscuro
+      ];
+
+      function random(min,max){ return Math.random()*(max-min)+min; }
+
+      function createHeart(){
+        const h = document.createElement('div');
+        h.className = 'heart';
+
+        const size = Math.floor(random(12,36));
+        h.style.width = size + 'px';
+        h.style.height = size + 'px';
+        h.style.left = Math.floor(random(2,98)) + '%';
+        h.style.top = Math.floor(random(70,95)) + '%';
+
+        const c = colors[Math.floor(random(0,colors.length))];
+        h.style.background = `linear-gradient(135deg, ${c[0]}, ${c[1]})`;
+        h.style.setProperty('--drift', Math.floor(random(-20,20)) + 'vw');
+
+        const dur = random(6,14);
+        const delay = random(0,2);
+        h.style.animationDuration = dur + 's';
+        h.style.animationDelay = delay + 's';
+        h.style.opacity = 0;
+
+        layer.appendChild(h);
+
+        setTimeout(()=> {
+          h.remove();
+        }, (dur + delay) * 1000 + 500);
+      }
+
+      setInterval(()=> {
+        const count = Math.floor(random(1,3));
+        for(let i=0;i<count;i++) createHeart();
+      }, 700);
+
+      for(let i=0;i<8;i++) setTimeout(createHeart, i*120);
+    })();
+
+    // Actualizar vista previa al cargar
+    updatePreview();
+
+    // Actualizar en tiempo real al editar campos principales
+    friendNameInput.addEventListener('input', () => friendNamePreview.textContent = friendNameInput.value || 'Nana');
+    messageText.addEventListener('input', () => {
+      letterPreview.innerHTML = messageText.value
+        .split('\\n\\n')
+        .map(p => `<p>${escapeHtml(p).replace(/\\n/g,'<br>')}</p>`)
+        .join('');
+    });
+
+    // Aplicar cambios rápidos al cambiar color o tipografía
+    accentColor.addEventListener('input', () => document.documentElement.style.setProperty('--accent', accentColor.value));
+    bgColor.addEventListener('input', () => document.documentElement.style.setProperty('--bg', bgColor.value));
+    cardBgColor.addEventListener('input', () => cardToExport.style.background = `linear-gradient(180deg, ${cardBgColor.value}, ${cardBgColor.value})`);
+    nameSize.addEventListener('change', () => friendNamePreview.style.fontSize = nameSize.value);
+    fontSelect.addEventListener('change', () => cardToExport.style.fontFamily = fontSelect.value);
+  </script>
+</body>
+</html>
